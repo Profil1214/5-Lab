@@ -1,10 +1,10 @@
-﻿//! \file IOTreap.cpp
-//! \brief Реализация функций ввода-вывода для декартового дерева
+﻿
 
 #include "IOTreap.h"
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
+#include "InputValidator.h" 
 
 //! \brief Отображает меню декартового дерева
 void IOTreap::ShowMenu()
@@ -15,11 +15,9 @@ void IOTreap::ShowMenu()
     std::cout << "3. Удалить элемент (неоптимизированный - 2 Split, 1 Merge)" << std::endl;
     std::cout << "4. Удалить элемент (оптимизированный - 1 Merge)" << std::endl;
     std::cout << "5. Найти элемент" << std::endl;
-    std::cout << "6. Разделить дерево" << std::endl;
-    std::cout << "7. Слить деревья" << std::endl;
-    std::cout << "8. Вывести дерево" << std::endl;
-    std::cout << "9. Очистить дерево" << std::endl;
-    std::cout << "10. Вернуться в главное меню" << std::endl;
+    std::cout << "6. Вывести дерево" << std::endl;
+    std::cout << "7. Очистить дерево" << std::endl;
+    std::cout << "8. Вернуться в главное меню" << std::endl;
     std::cout << "Выбор: ";
 }
 
@@ -33,45 +31,45 @@ void IOTreap::ProcessChoice(Treap& tree)
     while (running)
     {
         ShowMenu();
-        std::cin >> choice;
+        choice = InputValidator::GetInt();
 
         switch (choice)
         {
         case 1:
         {
-            int key, priority;
+            int key;
             std::cout << "Введите ключ: ";
-            std::cin >> key;
+            key = InputValidator::GetInt();;
 
-            // Проверка существования элемента
             if (tree.FindElement(key) != -1)
             {
                 std::cout << "Ошибка: элемент с ключом " << key << " уже существует!" << std::endl;
                 break;
             }
 
-            std::cout << "Введите приоритет: ";
-            std::cin >> priority;
+            int priority = rand() % 1000 + 1;
+            std::cout << "Сгенерирован приоритет: " << priority << std::endl;
+
             tree.InsertUnoptimized(key, priority);
-            std::cout << "Элемент добавлен (неоптимизированный метод)" << std::endl;
+            std::cout << "Элемент добавлен" << std::endl;
             break;
         }
 
         case 2:
         {
-            int key, priority;
+            int key;
             std::cout << "Введите ключ: ";
-            std::cin >> key;
+            key = InputValidator::GetInt();;
 
-            // Проверка существования элемента
+           
             if (tree.FindElement(key) != -1)
             {
                 std::cout << "Ошибка: элемент с ключом " << key << " уже существует!" << std::endl;
                 break;
             }
 
-            std::cout << "Введите приоритет: ";
-            std::cin >> priority;
+            int priority = rand() % 1000 + 1;
+            std::cout << "Сгенерирован приоритет: " << priority << std::endl;
             tree.InsertOptimized(key, priority);
             std::cout << "Элемент добавлен (оптимизированный метод)" << std::endl;
             break;
@@ -81,9 +79,9 @@ void IOTreap::ProcessChoice(Treap& tree)
         {
             int key;
             std::cout << "Введите ключ для удаления: ";
-            std::cin >> key;
+            key = InputValidator::GetInt();;
 
-            // Проверка существования элемента
+           
             if (tree.FindElement(key) == -1)
             {
                 std::cout << "Ошибка: элемент с ключом " << key << " не найден!" << std::endl;
@@ -99,9 +97,9 @@ void IOTreap::ProcessChoice(Treap& tree)
         {
             int key;
             std::cout << "Введите ключ для удаления: ";
-            std::cin >> key;
+            key = InputValidator::GetInt();;
 
-            // Проверка существования элемента
+            
             if (tree.FindElement(key) == -1)
             {
                 std::cout << "Ошибка: элемент с ключом " << key << " не найден!" << std::endl;
@@ -117,7 +115,7 @@ void IOTreap::ProcessChoice(Treap& tree)
         {
             int key;
             std::cout << "Введите ключ для поиска: ";
-            std::cin >> key;
+            key = InputValidator::GetInt();;
             int priority = tree.FindElement(key);
             if (priority != -1)
             {
@@ -133,79 +131,19 @@ void IOTreap::ProcessChoice(Treap& tree)
 
         case 6:
         {
-            int key;
-            std::cout << "Введите ключ для разделения: ";
-            std::cin >> key;
-
-            TreapNode* left = nullptr;
-            TreapNode* right = nullptr;
-            tree.Split(key, left, right);
-
-            std::cout << "Левое поддерево (ключи < " << key << "):" << std::endl;
-            Treap tempLeft;
-            tempLeft.SetRoot(left);
-            tempLeft.DisplayTree();
-
-            std::cout << "\nПравое поддерево (ключи >= " << key << "):" << std::endl;
-            Treap tempRight;
-            tempRight.SetRoot(right);
-            tempRight.DisplayTree();
-
-            // Восстанавливаем исходное дерево
-            tree.SetRoot(tree.Merge(left, right));
-            std::cout << "\nИсходное дерево восстановлено" << std::endl;
-            break;
-        }
-
-        case 7:
-        {
-            std::cout << "Для демонстрации слияния создадим два дерева:" << std::endl;
-
-            Treap tree1;
-            tree1.InsertOptimized(5, 50);
-            tree1.InsertOptimized(3, 30);
-            tree1.InsertOptimized(7, 70);
-
-            Treap tree2;
-            tree2.InsertOptimized(9, 90);
-            tree2.InsertOptimized(6, 60);
-            tree2.InsertOptimized(12, 120);
-
-            std::cout << "Дерево 1:" << std::endl;
-            tree1.DisplayTree();
-
-            std::cout << "\nДерево 2:" << std::endl;
-            tree2.DisplayTree();
-
-            TreapNode* merged = tree.Merge(tree1.GetRoot(), tree2.GetRoot());
-
-            std::cout << "\nРезультат слияния:" << std::endl;
-            Treap mergedTree;
-            mergedTree.SetRoot(merged);
-            mergedTree.DisplayTree();
-
-            // Очищаем временные деревья, чтобы не было утечек памяти
-            tree1.ClearTree();
-            tree2.ClearTree();
-            mergedTree.ClearTree();
-            break;
-        }
-
-        case 8:
-        {
             std::cout << "\n=== Декартово дерево ===" << std::endl;
             tree.DisplayTree();
             break;
         }
 
-        case 9:
+        case 7:
         {
             tree.ClearTree();
             std::cout << "Дерево очищено" << std::endl;
             break;
         }
 
-        case 10:
+        case 8:
         {
             running = false;
             break;

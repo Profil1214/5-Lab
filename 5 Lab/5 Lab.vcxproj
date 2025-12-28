@@ -130,6 +130,7 @@
     <ClCompile Include="5 Lab.cpp" />
     <ClCompile Include="BinaryTree.cpp" />
     <ClCompile Include="BinaryTreeNode.cpp" />
+    <ClCompile Include="InputValidator.cpp" />
     <ClCompile Include="IOBinaryTree.cpp" />
     <ClCompile Include="IOTreap.cpp" />
     <ClCompile Include="Treap.cpp" />
@@ -138,6 +139,7 @@
   <ItemGroup>
     <ClInclude Include="BinaryTree.h" />
     <ClInclude Include="BinaryTreeNode.h" />
+    <ClInclude Include="InputValidator.h" />
     <ClInclude Include="IOBinaryTree.h" />
     <ClInclude Include="IOTreap.h" />
     <ClInclude Include="Treap.h" />

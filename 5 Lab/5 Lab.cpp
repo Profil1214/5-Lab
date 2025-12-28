@@ -1,12 +1,10 @@
-﻿//! \file Laboratory_Work_5.cpp
-//! \brief Главный файл лабораторной работы №5
-//! \details Реализация структур данных: бинарное дерево поиска и декартово дерево
-
+﻿
 #include <iostream>
 #include "BinaryTree.h"
 #include "Treap.h"
 #include "IOBinaryTree.h"
 #include "IOTreap.h"
+#include "InputValidator.h" 
 
 //! \brief Отображает главное меню
 void ShowMainMenu()
@@ -22,7 +20,6 @@ void ShowMainMenu()
 //! \return Код завершения программы
 int main()
 {
-    // Установка русского языка в консоли
     setlocale(LC_ALL, "Russian");
 
     int choice;
@@ -31,7 +28,7 @@ int main()
     while (running)
     {
         ShowMainMenu();
-        std::cin >> choice;
+        choice = InputValidator::GetInt();
 
         switch (choice)
         {

@@ -1,5 +1,3 @@
-//! \file Treap.h
-//! \brief Заголовочный файл структуры декартового дерева
 #pragma once
 
 #include "TreapNode.h"

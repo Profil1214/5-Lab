@@ -1,9 +1,8 @@
-﻿//! \file IOBinaryTree.cpp
-//! \brief Реализация функций ввода-вывода для бинарного дерева
-
+﻿
+#include "InputValidator.h"
 #include "IOBinaryTree.h"
 #include <iostream>
-
+#include "InputValidator.h" 
 //! \brief Отображает меню бинарного дерева
 void IOBinaryTree::ShowMenu()
 {
@@ -29,7 +28,7 @@ void IOBinaryTree::ProcessChoice(BinaryTree& tree)
     while (running)
     {
         ShowMenu();
-        std::cin >> choice;
+        choice = InputValidator::GetInt();
 
         switch (choice)
         {
@@ -37,9 +36,9 @@ void IOBinaryTree::ProcessChoice(BinaryTree& tree)
         {
             int data;
             std::cout << "Введите значение для добавления: ";
-            std::cin >> data;
+            data = InputValidator::GetInt();
 
-            // Проверка существования элемента
+            
             BinaryTreeNode* existing = tree.SearchElement(data);
             if (existing != nullptr)
             {
@@ -56,9 +55,9 @@ void IOBinaryTree::ProcessChoice(BinaryTree& tree)
         {
             int data;
             std::cout << "Введите значение для удаления: ";
-            std::cin >> data;
+            data = InputValidator::GetInt();
 
-            // Проверка существования элемента
+            
             BinaryTreeNode* existing = tree.SearchElement(data);
             if (existing == nullptr)
             {
@@ -75,7 +74,7 @@ void IOBinaryTree::ProcessChoice(BinaryTree& tree)
         {
             int data;
             std::cout << "Введите значение для поиска: ";
-            std::cin >> data;
+            data = InputValidator::GetInt();;
             BinaryTreeNode* result = tree.SearchElement(data);
             if (result != nullptr)
             {

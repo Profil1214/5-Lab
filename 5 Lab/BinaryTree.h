@@ -1,7 +1,5 @@
-//! \file BinaryTree.h
-//! \brief Заголовочный файл структуры бинарного дерева поиска
-#pragma once
 
+#pragma once
 #include "BinaryTreeNode.h"
 
 //! \brief Структура бинарного дерева поиска

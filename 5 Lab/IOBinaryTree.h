@@ -1,5 +1,3 @@
-//! \file IOBinaryTree.h
-//! \brief Заголовочный файл для ввода-вывода бинарного дерева
 #pragma once
 
 #include "BinaryTree.h"

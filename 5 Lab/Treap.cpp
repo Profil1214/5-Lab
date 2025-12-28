@@ -1,9 +1,6 @@
-//! \file Treap.cpp
-//! \brief Реализация методов декартового дерева
 
 #include "Treap.h"
 #include <iostream>
-#include <algorithm>
 
 //! \brief Конструктор декартового дерева
 Treap::Treap() : _root(nullptr)
@@ -72,60 +69,77 @@ int Treap::SearchHelper(TreapNode* node, int key)
     }
 }
 
-//! \brief Вспомогательная функция для разделения дерева
+//! \brief Вспомогательная функция для разделения дерева (ИСПРАВЛЕНО)
 //! \param node Текущий узел
 //! \param key Ключ для разделения
-//! \param left Левое поддерево
-//! \param right Правое поддерево
+//! \param left Левое поддерево (ключи < key)
+//! \param right Правое поддерево (ключи >= key)
 void Treap::SplitHelper(TreapNode* node, int key, TreapNode*& left, TreapNode*& right)
 {
     if (node == nullptr)
     {
         left = nullptr;
         right = nullptr;
+        return;
     }
-    else if (node->GetKey() <= key)
+
+    // Разделяем по ключу, а не по приоритету!
+    if (node->GetKey() <= key)
     {
-        // Корень идет в левое поддерево
+        // Узел идет в левое дерево (ключ <= разделителя)
         TreapNode* leftRight = nullptr;
-        SplitHelper(node->GetRight(), key, leftRight, right);
+        TreapNode* newRight = nullptr;
+        SplitHelper(node->GetRight(), key, leftRight, newRight);
         node->SetRight(leftRight);
         left = node;
+        right = newRight;
     }
     else
     {
-        // Корень идет в правое поддерево
+        // Узел идет в правое дерево (ключ > разделителя)
+        TreapNode* newLeft = nullptr;
         TreapNode* rightLeft = nullptr;
-        SplitHelper(node->GetLeft(), key, left, rightLeft);
+        SplitHelper(node->GetLeft(), key, newLeft, rightLeft);
         node->SetLeft(rightLeft);
+        left = newLeft;
         right = node;
     }
 }
 
-//! \brief Вспомогательная функция для слияния деревьев
-//! \param left Левое поддерево
-//! \param right Правое поддерево
+//! \brief Вспомогательная функция для слияния деревьев (ИСПРАВЛЕНО)
+//! \param left Левое поддерево (все ключи < ключей правого поддерева)
+//! \param right Правое поддерево (все ключи >= ключей левого поддерева)
 //! \return Корень объединенного дерева
 TreapNode* Treap::MergeHelper(TreapNode* left, TreapNode* right)
 {
-    if (left == nullptr || right == nullptr)
+    if (left == nullptr)
     {
-        return left != nullptr ? left : right;
+        return right;
     }
 
+    if (right == nullptr)
+    {
+        return left;
+    }
+
+    // Сравниваем приоритеты для поддержки свойства кучи
     if (left->GetPriority() > right->GetPriority())
     {
-        left->SetRight(MergeHelper(left->GetRight(), right));
+        // Левый узел имеет больший приоритет
+        TreapNode* mergedRight = MergeHelper(left->GetRight(), right);
+        left->SetRight(mergedRight);
         return left;
     }
     else
     {
-        right->SetLeft(MergeHelper(left, right->GetLeft()));
+        // Правый узел имеет больший или равный приоритет
+        TreapNode* mergedLeft = MergeHelper(left, right->GetLeft());
+        right->SetLeft(mergedLeft);
         return right;
     }
 }
 
-//! \brief Вспомогательная функция для вставки (оптимизированной)
+//! \brief Вспомогательная функция для вставки (оптимизированной) - ИСПРАВЛЕНО
 //! \param node Текущий узел
 //! \param newNode Новый узел
 //! \return Корень измененного дерева
@@ -136,26 +150,33 @@ TreapNode* Treap::InsertOptimizedHelper(TreapNode* node, TreapNode* newNode)
         return newNode;
     }
 
+    // Если приоритет нового узла выше текущего
     if (newNode->GetPriority() > node->GetPriority())
     {
+        // Разделяем поддерево по ключу нового узла
         TreapNode* left = nullptr;
         TreapNode* right = nullptr;
         SplitHelper(node, newNode->GetKey(), left, right);
+
+        // Новый узел становится корнем
         newNode->SetLeft(left);
         newNode->SetRight(right);
         return newNode;
     }
     else if (newNode->GetKey() < node->GetKey())
     {
+        // Идем в левое поддерево
         node->SetLeft(InsertOptimizedHelper(node->GetLeft(), newNode));
     }
     else
     {
+        // Идем в правое поддерево (при равенстве ключей - тоже вправо)
         node->SetRight(InsertOptimizedHelper(node->GetRight(), newNode));
     }
 
     return node;
 }
+
 //! \brief Вспомогательная функция для удаления (оптимизированного)
 //! \param node Текущий узел
 //! \param key Ключ для удаления
@@ -211,22 +232,28 @@ int Treap::FindElement(int key)
     return SearchHelper(_root, key);
 }
 
-//! \brief Добавляет элемент (неоптимизированный метод)
+//! \brief Добавляет элемент (неоптимизированный метод) - ИСПРАВЛЕНО
 //! \param key Ключ узла
 //! \param priority Приоритет узла
 void Treap::InsertUnoptimized(int key, int priority)
 {
+    // Проверяем, не существует ли уже такой ключ
+    if (FindElement(key) != -1)
+    {
+        return; // Элемент уже существует
+    }
+
     TreapNode* newNode = new TreapNode(key, priority);
 
-    // 1. Split по ключу
+    // 1. Разделяем текущее дерево по ключу
     TreapNode* left = nullptr;
     TreapNode* right = nullptr;
     SplitHelper(_root, key, left, right);
 
-    // 2. Merge left с новым узлом
+    // 2. Сливаем левую часть с новым узлом
     TreapNode* leftWithNew = MergeHelper(left, newNode);
 
-    // 3. Merge результата с right
+    // 3. Сливаем результат с правой частью
     _root = MergeHelper(leftWithNew, right);
 }
 
@@ -235,46 +262,53 @@ void Treap::InsertUnoptimized(int key, int priority)
 //! \param priority Приоритет узла
 void Treap::InsertOptimized(int key, int priority)
 {
+    // Проверяем, не существует ли уже такой ключ
+    if (FindElement(key) != -1)
+    {
+        return; // Элемент уже существует
+    }
+
     TreapNode* newNode = new TreapNode(key, priority);
     _root = InsertOptimizedHelper(_root, newNode);
 }
 
-//! \brief Удаляет элемент (неоптимизированный метод)
+//! \brief Удаляет элемент (неоптимизированный метод) - ИСПРАВЛЕНО
 //! \param key Ключ узла
 void Treap::RemoveUnoptimized(int key)
 {
-    // 1. Split по ключу-1, чтобы отделить элементы <= key
-    TreapNode* left1 = nullptr;
-    TreapNode* right1 = nullptr;
-    SplitHelper(_root, key - 1, left1, right1);
+    // 1. Разделяем дерево на элементы с ключом < key и >= key
+    TreapNode* left = nullptr;
+    TreapNode* right = nullptr;
+    SplitHelper(_root, key - 1, left, right);
 
-    if (right1 == nullptr)
+    if (right == nullptr)
     {
         // Элемент не найден
-        _root = left1;
+        _root = left;
         return;
     }
 
-    // 2. Split по ключу, чтобы отделить элементы с ключом == key
-    TreapNode* left2 = nullptr;
-    TreapNode* right2 = nullptr;
-    SplitHelper(right1, key, left2, right2);
+    // 2. Разделяем правую часть на элементы с ключом == key и > key
+    TreapNode* middle = nullptr;
+    TreapNode* newRight = nullptr;
+    SplitHelper(right, key, middle, newRight);
 
-    // 3. Удаляем узел с ключом == key (если он существует)
-    // left2 может содержать узел с ключом == key
-    if (left2 != nullptr && left2->GetKey() == key)
+    // 3. Если middle не пустой, удаляем его (это узел с ключом == key)
+    if (middle != nullptr)
     {
-        // Сливаем левое и правое поддеревья узла left2
-        TreapNode* mergedChildren = MergeHelper(left2->GetLeft(), left2->GetRight());
+        // Сливаем левое и правое поддерево middle (игнорируем сам middle)
+        TreapNode* mergedChildren = MergeHelper(middle->GetLeft(), middle->GetRight());
+        delete middle;
 
-        // Удаляем узел
-        delete left2;
-        left2 = mergedChildren;
+        // 4. Сливаем все части обратно
+        TreapNode* temp = MergeHelper(left, mergedChildren);
+        _root = MergeHelper(temp, newRight);
     }
-
-    // 4. Merge left1 с left2 и right2
-    TreapNode* temp = MergeHelper(left1, left2);
-    _root = MergeHelper(temp, right2);
+    else
+    {
+        // Элемент не найден, восстанавливаем дерево
+        _root = MergeHelper(left, newRight);
+    }
 }
 
 //! \brief Удаляет элемент (оптимизированный метод)

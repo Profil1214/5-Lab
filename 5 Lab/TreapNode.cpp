@@ -1,5 +1,3 @@
-//! \file TreapNode.cpp
-//! \brief Реализация методов узла декартового дерева
 
 #include "TreapNode.h"
 

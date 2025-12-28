@@ -1,5 +1,3 @@
-//! \file IOTreap.h
-//! \brief Заголовочный файл для ввода-вывода декартового дерева
 #pragma once
 
 #include "Treap.h"

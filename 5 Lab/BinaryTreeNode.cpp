@@ -1,5 +1,3 @@
-//! \file BinaryTreeNode.cpp
-//! \brief Реализация методов узла бинарного дерева
 
 #include "BinaryTreeNode.h"
 #include <iostream>
@@ -14,7 +12,6 @@ BinaryTreeNode::BinaryTreeNode(int data)
 //! \brief Деструктор
 BinaryTreeNode::~BinaryTreeNode()
 {
-    // Дочерние узлы удаляются в BinaryTree
 }
 
 //! \brief Возвращает значение узла

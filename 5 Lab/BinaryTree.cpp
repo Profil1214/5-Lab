@@ -1,9 +1,6 @@
-//! \file BinaryTree.cpp
-//! \brief Реализация методов бинарного дерева поиска
 
 #include "BinaryTree.h"
 #include <iostream>
-#include <algorithm>
 
 //! \brief Конструктор бинарного дерева
 BinaryTree::BinaryTree() : _root(nullptr)
@@ -83,7 +80,7 @@ void BinaryTree::AddElement(int data)
         }
         else
         {
-            // Элемент уже существует
+           
             delete newNode;
             return;
         }
@@ -132,39 +129,31 @@ BinaryTreeNode* BinaryTree::RemoveHelper(BinaryTreeNode* node, int data)
     }
     else
     {
-        // Узел найден
         if (node->GetLeft() == nullptr && node->GetRight() == nullptr)
         {
-            // Нет потомков
             delete node;
             return nullptr;
         }
         else if (node->GetLeft() == nullptr)
         {
-            // Только правый потомок
             BinaryTreeNode* temp = node->GetRight();
             delete node;
             return temp;
         }
         else if (node->GetRight() == nullptr)
         {
-            // Только левый потомок
+            
             BinaryTreeNode* temp = node->GetLeft();
             delete node;
             return temp;
         }
         else
         {
-            // Два потомка
+           
             BinaryTreeNode* minNode = FindMinHelper(node->GetRight());
-            // Копируем данные минимального узла
+            
             int minData = minNode->GetData();
             node->SetRight(RemoveHelper(node->GetRight(), minData));
-            // Устанавливаем новые данные в текущий узел
-            // В реальной реализации нужно было бы менять данные,
-            // но так как GetData возвращает int, а не указатель,
-            // мы не можем изменить данные напрямую
-            // Вместо этого создадим новый узел и удалим старый
             BinaryTreeNode* newNode = new BinaryTreeNode(minData);
             newNode->SetLeft(node->GetLeft());
             newNode->SetRight(node->GetRight());
